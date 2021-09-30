@@ -2,19 +2,13 @@ import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-// import Button from "@mui/material/Button";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import Checkbox from "@mui/material/Checkbox";
-// import Link from "@mui/material/Link";
-// import Paper from "@mui/material/Paper";
-import firebase from "./firebase.js";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CustomButton from "./components/shared/CustomButton";
-
+import firebase from "./firebase";
 const theme = createTheme();
 
 export default function Login() {
@@ -23,17 +17,26 @@ export default function Login() {
   const [showVerify, setShowVerify] = useState(false);
   //const [user, setUser] = useState(null);
 
-  const login = () => {
+  const login = (email, password) => {
+    alert("INSIDE LOGIN FUNCTION");
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
+      .then(() => {
         // Signed in
-        const user = userCredential.user;
-        console.log(user);
-        if (user) {
-          window.location.href = "/teacher-dashboard";
-        }
+
+        firebase
+          .firestore()
+          .collection("Users")
+          .doc(email)
+          .get()
+          .then((doc) => {
+            if (doc.data().type.toLowerCase() === "school") {
+              window.location.href = "/teacher-dashboard";
+            } else if (doc.data().type === "student") {
+              window.location.href = "/student-dashboard";
+            }
+          });
       })
       .catch((error) => {
         console.log(`FIREBASE ERROR: {error.code} {error.message}`);
@@ -75,8 +78,8 @@ export default function Login() {
                   label="Email Address"
                   name="email"
                   autoComplete="email"
-                  onChange={(text) => {
-                    setEmail(text);
+                  onChange={(e) => {
+                    setEmail(e.target.value);
                   }}
                   autoFocus
                 />
@@ -88,8 +91,8 @@ export default function Login() {
                   label="Password"
                   type="password"
                   id="password"
-                  onChange={(text) => {
-                    setPassword(text);
+                  onChange={(e) => {
+                    setPassword(e.target.value);
                   }}
                   autoComplete="current-password"
                 />
@@ -98,7 +101,7 @@ export default function Login() {
                 <CustomButton
                   onClick={() => {
                     //window.location.href = "/teacher-dashboard";
-                    login();
+                    login(email, password);
                   }}
                   style={{ backgroundColor: "#fa4d56", color: "white" }}
                   variant="primary"

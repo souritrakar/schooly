@@ -2,19 +2,14 @@ import React, { useState } from "react";
 import Avatar from "@mui/material/Avatar";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
-// import Button from "@mui/material/Button";
-// import FormControlLabel from "@mui/material/FormControlLabel";
-// import Checkbox from "@mui/material/Checkbox";
-// import Link from "@mui/material/Link";
-// import Paper from "@mui/material/Paper";
 import Box from "@mui/material/Box";
 import Grid from "@mui/material/Grid";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import CustomButton from "../shared/CustomButton";
-// import { getAuth, createUserWithEmailAndPassword } from "firebase/auth";
 import firebase from "../../firebase";
+//import { v4 } from "uuid";
 
 const theme = createTheme();
 
@@ -24,34 +19,31 @@ export default function SchoolRegister() {
   const [password, setPassword] = useState("");
   const [showVerify, setShowVerify] = useState(false);
 
-  const register = () => {
+  const register = (email, password) => {
+    console.log("REGISTER FUNCTION WORKING");
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Signed in
-        const user = userCredential.user;
-        console.log("SIGNED IN: ", user);
-        if (user) {
-          window.location.href = "/teacher-dashboard";
-        }
+      .then(() => {
+        //const uid = v4();
+        firebase
+          .firestore()
+          .collection("Users")
+          .doc(email)
+          .set({
+            name: name,
+            email: email,
+            password: password,
+            type: "school",
+          })
+          .then(() => {
+            alert("INSIDE DATABASE FUNCTION");
+            window.location.href = "/login";
+          });
       })
       .catch((error) => {
-        console.log(`FIREBASE ERROR: {error.code} {error.message}`);
+        alert(error);
       });
-    // const auth = getAuth();
-    // createUserWithEmailAndPassword(auth, email, password)
-    //   .then((userCredential) => {
-    //     // Signed in
-    //     const user = userCredential.user;
-    //     console.log("SIGNED IN: ", user);
-    //     if (user) {
-    //       window.location.href = "/teacher-dashboard";
-    //     }
-    //   })
-    //   .catch((error) => {
-    //     console.log(`FIREBASE ERROR: {error.code} {error.message}`);
-    //   });
   };
 
   if (showVerify === false) {
@@ -89,8 +81,8 @@ export default function SchoolRegister() {
                     id="name"
                     label="School/Institution Name"
                     name="name"
-                    onChange={(text) => {
-                      setName(text);
+                    onChange={(e) => {
+                      setName(e.target.value);
                     }}
                     autoFocus
                   />
@@ -102,8 +94,8 @@ export default function SchoolRegister() {
                     label="Official School Email Address"
                     name="email"
                     autoComplete="email"
-                    onChange={(text) => {
-                      setEmail(text);
+                    onChange={(e) => {
+                      setEmail(e.target.value);
                     }}
                     autoFocus
                   />
@@ -115,8 +107,8 @@ export default function SchoolRegister() {
                     label="Password"
                     type="password"
                     id="password"
-                    onChange={(text) => {
-                      setPassword(text);
+                    onChange={(e) => {
+                      setPassword(e.target.value);
                     }}
                     autoComplete="current-password"
                   />
@@ -125,7 +117,7 @@ export default function SchoolRegister() {
                   <CustomButton
                     onClick={() => {
                       //window.location.href = "/login";
-                      register();
+                      register(email, password);
                     }}
                     style={{ backgroundColor: "#fa4d56", color: "white" }}
                     variant="primary"

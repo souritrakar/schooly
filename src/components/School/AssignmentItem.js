@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import List from "@mui/material/List";
 import ListItem from "@mui/material/ListItem";
 import Divider from "@mui/material/Divider";
 import ListItemText from "@mui/material/ListItemText";
@@ -9,13 +10,10 @@ import VisibilityIcon from "@mui/icons-material/Visibility";
 import IconButton from "@mui/material/IconButton";
 import Modal from "react-modal";
 import { Document } from "react-pdf";
+import "./AssignmentItem.css";
 
-export default function NoticeItem(props) {
-  const [modal, setModal] = useState(false);
-
-  const handleModal = () => {
-    setModal(!modal);
-  };
+export default function AssignmentItem(props) {
+  const [modal, setModal] = React.useState(false);
 
   const customStyles = {
     content: {
@@ -29,30 +27,34 @@ export default function NoticeItem(props) {
     },
   };
 
+  const handleModal = () => {
+    setModal(!modal);
+  };
+
   return (
     <div>
       <ListItem>
         <ListItem alignItems="flex-start">
           <ListItemAvatar>
             <Avatar
-              alt="notice"
+              alt="homework"
               src="https://www.iconbunny.com/icons/media/catalog/product/1/5/159.12-assignment-icon-iconbunny.jpg"
             />
           </ListItemAvatar>
           <ListItemText
             numberOfLines={1}
             primary={props.name}
-            className="notice_name"
+            className="assignment_name"
             secondary={
               <React.Fragment>
                 <Typography
                   sx={{ display: "inline" }}
-                  className="notice_name"
+                  className="assignment_name"
                   component="span"
                   variant="body2"
                   color="text.primary"
                 >
-                  {props.name}
+                  {props.date}
                 </Typography>
               </React.Fragment>
             }
