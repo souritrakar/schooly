@@ -1,7 +1,31 @@
 import "./App.css";
+import React from "react";
+import { BrowserRouter as Router, Switch, Route } from "react-router-dom";
+import { LandingPage, SchoolRegister, TeacherDashboard } from "./components";
+import Login from "./Login";
 
 function App() {
-  return <div className="App"></div>;
+  return (
+    <Router>
+      <div className="App">
+        <Switch>
+          <Route exact path="/">
+            <LandingPage />
+          </Route>
+          <Route exact path="/school-register">
+            <SchoolRegister />
+          </Route>
+          <Route exact path="/teacher-dashboard">
+            <TeacherDashboard />
+          </Route>
+
+          <Route exact path="/login">
+            <Login />
+          </Route>
+        </Switch>
+      </div>
+    </Router>
+  );
 }
 
 export default App;
