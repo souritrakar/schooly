@@ -7,6 +7,7 @@ import { Fab } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import Box from "@mui/material/Box";
 import firebase from "../../firebase";
+import "./AssignmentPage.css";
 
 export default function Notices() {
   const [notices, setNotices] = useState([]);
@@ -71,7 +72,6 @@ export default function Notices() {
 
   return (
     <div>
-      <h3>NOTICES PAGE</h3>
       <Modal
         isOpen={modal}
         onRequestClose={handleModal}
@@ -108,31 +108,52 @@ export default function Notices() {
         <CustomButton onClick={() => createNotice()}>Add notice</CustomButton>
       </Modal>
       <Fab
-        onClick={() => {
-          handleModal();
-        }}
+        style={{ backroundColor: "#fa4d56", marginTop: "5%" }}
+        onClick={() => handleModal()}
+        color="secondary"
+        aria-label="add"
       >
-        <AddIcon sx={{ mr: 1 }} />
+        <AddIcon />
       </Fab>
-
+      <br />
+      <br />
       {notices.map((i) => {
         return (
           <Box
             sx={{
-              border: 1,
-              borderRadius: 3,
-              width: "100%",
+              width: window.innerWidth / 2,
+
+              bgcolor: "background.paper",
             }}
           >
             <List
-              sx={{
-                width: "120%",
-                border: "black",
-                minWidth: 300,
-                padding: "1%",
-              }}
+              sx={{ width: "100%", maxWidth: 360, bgcolor: "background.paper" }}
             >
-              <NoticeItem heading={i.name} body={i.text} />;
+              {notices.map((i) => {
+                return (
+                  <div className="assignment_container">
+                    <Box
+                      sx={{
+                        border: 1,
+                        borderRadius: 3,
+                        width: "100%",
+                      }}
+                    >
+                      <List
+                        sx={{
+                          width: "120%",
+                          border: "black",
+                          minWidth: 300,
+                          padding: "1%",
+                        }}
+                      >
+                        <NoticeItem name={i.name} body={i.text} />
+                      </List>
+                    </Box>
+                    <br />
+                  </div>
+                );
+              })}
             </List>
           </Box>
         );

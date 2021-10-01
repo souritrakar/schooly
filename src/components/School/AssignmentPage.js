@@ -73,38 +73,49 @@ export default function AssignmentPage() {
 
   const createAssignment = () => {
     const fileid = v4();
-    const file = new Blob([assignmentFile], {
-      type: "application/pdf",
-      name: "assignment",
-    });
-    console.log();
-    let myfileurl = URL.createObjectURL(file);
-    firebase
-      .storage()
-      .ref(`files/${schoolEmail}/${fileid}`)
-      .put(file)
-      .then(() => {
-        console.log("Put file!");
-        firebase
-          .storage()
-          .ref("files")
-          .child(`${schoolEmail}/${fileid}`)
-          .getDownloadURL()
-          .then((fileurl) => {
-            console.log("Download URL: ", fileurl);
-            firebase
-              .firestore()
-              .collection("Users")
-              .doc(schoolEmail)
-              .collection("Assignments")
-              .add({
-                name: assignmentName,
-                date: "9th Sep",
-                file: fileurl,
-              });
-          });
-        setModal2(false);
-      });
+
+    // FileList object
+
+    var reader = new FileReader();
+    // Closure to capture the file information.
+    reader.onload = (function (theFile) {
+      return function (e) {
+        var binaryData = e.target.result;
+        //Converting Binary Data to base 64
+        var base64String = window.btoa(binaryData);
+        //showing file converted to base64
+        console.log("fASDF", base64String);
+        alert("File converted to base64 successfuly!\nCheck in Textarea");
+      };
+    })(assignmentFile);
+    // Read in the image file as a data URL.
+
+    // firebase
+    //   .storage()
+    //   .ref(`files/${schoolEmail}/${fileid}`)
+    //   .put(assignmentFile, { applicationType: "application/pdf" })
+    //   .then(() => {
+    //     console.log("Put file!");
+    //     firebase
+    //       .storage()
+    //       .ref("files")
+    //       .child(`${schoolEmail}/${fileid}`)
+    //       .getDownloadURL()
+    //       .then((fileurl) => {
+    //         console.log("Download URL: ", fileurl);
+    //         firebase
+    //           .firestore()
+    //           .collection("Users")
+    //           .doc(schoolEmail)
+    //           .collection("Assignments")
+    //           .add({
+    //             name: assignmentName,
+    //             date: "9th Sep",
+    //             file: fileurl,
+    //           });
+    //       });
+    //     setModal2(false);
+    //   });
   };
 
   const addStudent = () => {
@@ -302,6 +313,7 @@ export default function AssignmentPage() {
                     <AssignmentItem
                       name={assignment.name}
                       date={assignment.date}
+                      fileurl={assignment.file}
                     />
                   </List>
                 </Box>

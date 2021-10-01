@@ -80,7 +80,7 @@ export default function AssignmentItem(props) {
             style={customStyles}
             contentLabel="Add assignment"
           >
-            <Document file={props.file} />
+            <iframe src={props.fileurl} width="800" height="600" />
           </Modal>
         </ListItem>
         <Divider variant="middle" component="li" />

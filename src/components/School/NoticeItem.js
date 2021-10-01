@@ -36,7 +36,7 @@ export default function NoticeItem(props) {
           <ListItemAvatar>
             <Avatar
               alt="notice"
-              src="https://www.iconbunny.com/icons/media/catalog/product/1/5/159.12-assignment-icon-iconbunny.jpg"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTrlwYZxDvdEnPdm89VfvyvlVXyuaJL3-YphobEMTb0KbzcD4a0fIEsR6LE_jicVUgVQFM&usqp=CAU"
             />
           </ListItemAvatar>
           <ListItemText
@@ -52,13 +52,13 @@ export default function NoticeItem(props) {
                   variant="body2"
                   color="text.primary"
                 >
-                  {props.name}
+                  {props.body}
                 </Typography>
               </React.Fragment>
             }
           />
 
-          <IconButton
+          {/* <IconButton
             onClick={() => {
               setModal(true);
             }}
@@ -70,16 +70,16 @@ export default function NoticeItem(props) {
             }}
           >
             <VisibilityIcon />
-          </IconButton>
+          </IconButton> */}
 
-          <Modal
+          {/* <Modal
             isOpen={modal}
             onRequestClose={handleModal}
             style={customStyles}
             contentLabel="Add assignment"
           >
             <Document file={props.file} />
-          </Modal>
+          </Modal> */}
         </ListItem>
         <Divider variant="middle" component="li" />
       </ListItem>
