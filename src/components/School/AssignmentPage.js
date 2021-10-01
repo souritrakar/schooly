@@ -22,6 +22,14 @@ export default function AssignmentPage() {
   const [password, setPassword] = useState("");
   const [assignmentName, setAssignmentName] = useState("");
   const [assignmentFile, setAssignmentFile] = useState(null);
+  const [attendance, setAttendance] = useState([]);
+  const [base64String, setString] = React.useState("");
+  const [assignmentInstruction, setInstructions] = React.useState("");
+
+  const getDate = () => {
+    const d = new Date();
+    return `${d.getDate()}.${d.getMonth()}.${d.getFullYear()}`;
+  };
 
   const customStyles = {
     content: {
@@ -60,6 +68,28 @@ export default function AssignmentPage() {
             setAssignments(assignments);
             console.log(assignments);
           });
+
+        firebase
+          .firestore()
+          .collection("Users")
+          .doc(cred.email)
+          .get()
+          .then((doc) => {
+            if (doc.exists) {
+              let tempAttendance = doc.data().attendance;
+              if (tempAttendance.indexOf(getDate()) === -1) {
+                tempAttendance.push(getDate());
+                firebase
+                  .firestore()
+                  .collection("Users")
+                  .doc(cred.email)
+                  .set({ attendance: tempAttendance, ...cred });
+              }
+            }
+          })
+          .catch((error) => {
+            console.log("ERROR: ", error);
+          });
       }
     });
   }, []);
@@ -71,51 +101,62 @@ export default function AssignmentPage() {
     }
   };
 
-  const createAssignment = () => {
-    const fileid = v4();
+  const handleFileInputChange = (e) => {
+    console.log(e.target.files[0]);
 
-    // FileList object
+    const file = e.target.files[0];
 
-    var reader = new FileReader();
-    // Closure to capture the file information.
-    reader.onload = (function (theFile) {
-      return function (e) {
-        var binaryData = e.target.result;
-        //Converting Binary Data to base 64
-        var base64String = window.btoa(binaryData);
-        //showing file converted to base64
-        console.log("fASDF", base64String);
-        alert("File converted to base64 successfuly!\nCheck in Textarea");
+    getBase64(file)
+      .then((result) => {
+        file["base64"] = result;
+        console.log("File Is", file);
+        setString(result);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  const getBase64 = (file) => {
+    return new Promise((resolve) => {
+      let fileInfo;
+      let baseURL = "";
+      // Make new FileReader
+      let reader = new FileReader();
+
+      // Convert the file to base64 text
+      reader.readAsDataURL(file);
+
+      // on reader load somthing...
+      reader.onload = () => {
+        // Make a fileInfo Object
+        console.log("Called", reader);
+        baseURL = reader.result;
+        console.log(baseURL);
+        resolve(baseURL);
       };
-    })(assignmentFile);
-    // Read in the image file as a data URL.
+      console.log(fileInfo);
+    });
+  };
+  const createAssignment = async () => {
+    const fileid = v4();
+    var date = new Date();
 
-    // firebase
-    //   .storage()
-    //   .ref(`files/${schoolEmail}/${fileid}`)
-    //   .put(assignmentFile, { applicationType: "application/pdf" })
-    //   .then(() => {
-    //     console.log("Put file!");
-    //     firebase
-    //       .storage()
-    //       .ref("files")
-    //       .child(`${schoolEmail}/${fileid}`)
-    //       .getDownloadURL()
-    //       .then((fileurl) => {
-    //         console.log("Download URL: ", fileurl);
-    //         firebase
-    //           .firestore()
-    //           .collection("Users")
-    //           .doc(schoolEmail)
-    //           .collection("Assignments")
-    //           .add({
-    //             name: assignmentName,
-    //             date: "9th Sep",
-    //             file: fileurl,
-    //           });
-    //       });
-    //     setModal2(false);
-    //   });
+    let finaldate =
+      date.getFullYear() + "/" + (date.getMonth() + 1) + "/" + date.getDate();
+    firebase
+      .firestore()
+      .collection("Users")
+      .doc(schoolEmail)
+      .collection("Assignments")
+      .add({
+        name: assignmentName,
+        date: finaldate,
+        file: base64String,
+        instruction: assignmentInstruction,
+      });
+
+    setModal2(false);
   };
 
   const addStudent = () => {
@@ -128,6 +169,7 @@ export default function AssignmentPage() {
           email: email,
           password: password,
           type: "student",
+          schoolEmail: schoolEmail,
         });
       })
       .then(() => {
@@ -193,6 +235,7 @@ export default function AssignmentPage() {
           }}
           autoFocus
         />
+
         <TextField
           margin="normal"
           required
@@ -256,15 +299,30 @@ export default function AssignmentPage() {
           label="Assignment Name"
           type="text"
           id="assignment-name"
+          inputProps={{ maxLength: 60 }}
           onChange={(e) => {
             setAssignmentName(e.target.value);
           }}
           autoComplete="assignment-name"
         />
+        <TextField
+          margin="normal"
+          required
+          fullWidth
+          name="assignment-name"
+          label="Assignment Instructions"
+          type="text"
+          inputProps={{ maxLength: 200 }}
+          id="assignment-name"
+          onChange={(e) => {
+            setInstructions(e.target.value);
+          }}
+          autoComplete="assignment-name"
+        />
         <h2>Choose file to submit</h2>
         <input
-          onChange={() => {
-            handleFile;
+          onChange={(e) => {
+            handleFileInputChange(e);
           }}
           accept="application/pdf"
           type="file"
@@ -281,6 +339,7 @@ export default function AssignmentPage() {
       >
         <AddIcon />
       </Fab>
+      <br />
       <br />
       <Box
         sx={{
@@ -313,6 +372,7 @@ export default function AssignmentPage() {
                     <AssignmentItem
                       name={assignment.name}
                       date={assignment.date}
+                      instruction={assignment.instruction}
                       fileurl={assignment.file}
                     />
                   </List>
