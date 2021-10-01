@@ -56,7 +56,7 @@ export default function AssignmentPage() {
     //Check for Authentication State
     firebase.auth().onAuthStateChanged((cred) => {
       if (cred) {
-        //Fetch assignments for the school email
+        //Fetch assignments for the school
         let schoolEmail = "";
         firebase
           .firestore()
