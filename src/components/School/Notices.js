@@ -42,7 +42,6 @@ export default function Notices() {
           .doc(cred.email)
           .collection("Notices")
           .onSnapshot((doc) => {
-            console.log(cred.email);
             const temp = [];
             doc.forEach((n) => {
               temp.push(n.data());

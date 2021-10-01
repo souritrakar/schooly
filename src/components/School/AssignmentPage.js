@@ -25,6 +25,7 @@ export default function AssignmentPage() {
   const [attendance, setAttendance] = useState([]);
   const [base64String, setString] = React.useState("");
   const [assignmentInstruction, setInstructions] = React.useState("");
+  const [type, setType] = useState("teacher");
 
   const getDate = () => {
     const d = new Date();
@@ -52,43 +53,70 @@ export default function AssignmentPage() {
   }
 
   useEffect(() => {
+    //Check for Authentication State
     firebase.auth().onAuthStateChanged((cred) => {
       if (cred) {
-        firebase
-          .firestore()
-          .collection("Users")
-          .doc(cred.email)
-          .collection("Assignments")
-          .onSnapshot((doc) => {
-            const assignments = [];
-            doc.forEach((assignment) => {
-              assignments.push(assignment.data());
-            });
-            setSchoolEmail(cred.email);
-            setAssignments(assignments);
-            console.log(assignments);
-          });
-
+        //Fetch assignments for the school email
+        let schoolEmail = "";
         firebase
           .firestore()
           .collection("Users")
           .doc(cred.email)
           .get()
           .then((doc) => {
-            if (doc.exists) {
-              let tempAttendance = doc.data().attendance;
-              if (tempAttendance.indexOf(getDate()) === -1) {
-                tempAttendance.push(getDate());
-                firebase
-                  .firestore()
-                  .collection("Users")
-                  .doc(cred.email)
-                  .set({ attendance: tempAttendance, ...cred });
-              }
+            if (doc.data().type === "student") {
+              schoolEmail = doc.data().schoolEmail;
+              firebase
+                .firestore()
+                .collection("Users")
+                .doc(schoolEmail)
+                .collection("Assignments")
+                .onSnapshot((doc) => {
+                  const assignments = [];
+                  doc.forEach((assignment) => {
+                    assignments.push(assignment.data());
+                  });
+                  setSchoolEmail(schoolEmail);
+                  setAssignments(assignments);
+                });
+            } else {
+              firebase
+                .firestore()
+                .collection("Users")
+                .doc(cred.email)
+                .collection("Assignments")
+                .onSnapshot((doc) => {
+                  const assignments = [];
+                  doc.forEach((assignment) => {
+                    assignments.push(assignment.data());
+                  });
+                  setSchoolEmail(cred.email);
+                  setAssignments(assignments);
+                });
             }
-          })
-          .catch((error) => {
-            console.log("ERROR: ", error);
+
+            // For updating teacher's attendance
+            firebase
+              .firestore()
+              .collection("Users")
+              .doc(cred.email)
+              .get()
+              .then((doc) => {
+                if (doc.exists) {
+                  let tempAttendance = doc.data().attendance;
+                  if (tempAttendance.indexOf(getDate()) === -1) {
+                    tempAttendance.push(getDate());
+                    firebase
+                      .firestore()
+                      .collection("Users")
+                      .doc(cred.email)
+                      .set({ attendance: tempAttendance, ...cred });
+                  }
+                }
+              })
+              .catch((error) => {
+                console.log("ERROR: ", error);
+              });
           });
       }
     });
@@ -102,14 +130,11 @@ export default function AssignmentPage() {
   };
 
   const handleFileInputChange = (e) => {
-    console.log(e.target.files[0]);
-
     const file = e.target.files[0];
 
     getBase64(file)
       .then((result) => {
         file["base64"] = result;
-        console.log("File Is", file);
         setString(result);
       })
       .catch((err) => {
@@ -130,15 +155,16 @@ export default function AssignmentPage() {
       // on reader load somthing...
       reader.onload = () => {
         // Make a fileInfo Object
-        console.log("Called", reader);
         baseURL = reader.result;
-        console.log(baseURL);
         resolve(baseURL);
       };
-      console.log(fileInfo);
     });
   };
   const createAssignment = async () => {
+    {
+      /* Function for creating the assignment*/
+    }
+
     const fileid = v4();
     var date = new Date();
 
@@ -160,6 +186,9 @@ export default function AssignmentPage() {
   };
 
   const addStudent = () => {
+    {
+      /* Function for adding students to database*/
+    }
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -184,6 +213,7 @@ export default function AssignmentPage() {
             email: email,
             password: password,
             type: "student",
+            attendance: [],
           });
         setIsOpen(false);
       })
@@ -267,23 +297,28 @@ export default function AssignmentPage() {
           justifyContent: "flex-end",
         }}
       >
-        <Fab
-          onClick={() => {
-            setIsOpen(true);
-          }}
-          variant="extended"
-          color="primary"
-          aria-label="add"
-          style={{
-            marginRight: "5%",
-            marginTop: "2%",
-            backgroundColor: "#fa4d56",
-          }}
-        >
-          <AddIcon sx={{ mr: 1 }} />
-          Add Student
-        </Fab>
+        {type === "teacher" ? (
+          <Fab
+            onClick={() => {
+              setIsOpen(true);
+            }}
+            variant="extended"
+            color="primary"
+            aria-label="add"
+            style={{
+              marginRight: "5%",
+              marginTop: "2%",
+              backgroundColor: "#fa4d56",
+            }}
+          >
+            <AddIcon sx={{ mr: 1 }} />
+            Add Student
+          </Fab>
+        ) : (
+          ""
+        )}
       </div>
+      {/* Modal for adding students*/}
       <Modal
         isOpen={modal2}
         onRequestClose={() => setModal2(false)}
@@ -331,6 +366,7 @@ export default function AssignmentPage() {
           Submit assignment
         </CustomButton>
       </Modal>
+      {/* Floating Action Button to add assignment*/}
       <Fab
         style={{ backroundColor: "#fa4d56" }}
         onClick={() => setModal2(true)}
@@ -341,6 +377,7 @@ export default function AssignmentPage() {
       </Fab>
       <br />
       <br />
+      {/* Assignments getting displayed*/}
       <Box
         sx={{
           width: window.innerWidth / 2,

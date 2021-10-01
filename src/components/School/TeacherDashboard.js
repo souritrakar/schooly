@@ -31,7 +31,6 @@ export default function TeacherDashboard() {
           .doc(cred.email)
           .get()
           .then((doc) => {
-            console.log(doc.data());
             if (doc.data().type === "student") {
               window.location.href = "/";
             } else {

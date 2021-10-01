@@ -56,20 +56,24 @@ export default function LandingPage() {
         >
           <h3>Schooly</h3>
           <div style={{ display: "flex" }}>
-            <CustomButton  onClick={() => {
-              window.location.href = "/school-register";
-            }} variant="contained" disableRipple>
+            <CustomButton
+              onClick={() => {
+                window.location.href = "/school-register";
+              }}
+              variant="contained"
+              disableRipple
+            >
               Schools
             </CustomButton>
-            <CustomButton 
-             onClick={() => {
-              window.location.href = "/login";
-            }}
+            <CustomButton
+              onClick={() => {
+                window.location.href = "/login";
+              }}
               style={{ marginLeft: "5%" }}
               variant="contained"
               disableRipple
             >
-              Students
+              Login
             </CustomButton>
           </div>
         </div>

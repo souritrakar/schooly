@@ -1,6 +1,15 @@
 import React, { useEffect } from "react";
+import Notices from "./Notices";
+import BottomNavigation from "@mui/material/BottomNavigation";
+import BottomNavigationAction from "@mui/material/BottomNavigationAction";
+import AssignmentIcon from "@mui/icons-material/Assignment";
+import NotificationImportantIcon from "@mui/icons-material/NotificationImportant";
+import ListAltIcon from "@mui/icons-material/ListAlt";
+import AssignmentPage from "./AssignmentPage";
+import AttendancePage from "./AttendancePage";
+import firebase from "../../firebase";
 import { Fab } from "@mui/material";
-import Modal from "react-modal";
+
 import firebase from "../../firebase";
 
 export default function StudentDashboard(props) {
@@ -51,10 +60,31 @@ export default function StudentDashboard(props) {
 
   return (
     <div>
+      <div style={{ zIndex: 1000 }}>
+        <center>
+          <BottomNavigation
+            sx={{ width: "100%", boxShadow: 1, zIndex: 15 }}
+            value={value}
+            onChange={handleChange}
+          >
+            <BottomNavigationAction
+              label="Assignments"
+              value="assignments"
+              icon={<AssignmentIcon />}
+            />
+            <BottomNavigationAction
+              label="Notices"
+              value="notices"
+              icon={<NotificationImportantIcon />}
+            />
+          </BottomNavigation>
+          {value === "assignments" && <AssignmentPage />}
+          {value === "notices" && <Notices />}
+        </center>
+      </div>
       <center>
         <h2>Student Dashboard</h2>
       </center>
-      <Fab></Fab>
     </div>
   );
 }

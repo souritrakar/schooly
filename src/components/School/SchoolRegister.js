@@ -20,7 +20,6 @@ export default function SchoolRegister() {
   const [showVerify, setShowVerify] = useState(false);
 
   const register = (email, password) => {
-    console.log("REGISTER FUNCTION WORKING");
     firebase
       .auth()
       .createUserWithEmailAndPassword(email, password)
@@ -37,12 +36,11 @@ export default function SchoolRegister() {
             type: "school",
           })
           .then(() => {
-            alert("INSIDE DATABASE FUNCTION");
             window.location.href = "/login";
           });
       })
       .catch((error) => {
-        alert(error);
+        console.log(error);
       });
   };
 

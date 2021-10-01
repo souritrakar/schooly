@@ -18,7 +18,6 @@ export default function Login() {
   //const [user, setUser] = useState(null);
 
   const login = (email, password) => {
-    alert("INSIDE LOGIN FUNCTION");
     firebase
       .auth()
       .signInWithEmailAndPassword(email, password)
@@ -39,7 +38,7 @@ export default function Login() {
           });
       })
       .catch((error) => {
-        console.log(`FIREBASE ERROR: {error.code} {error.message}`);
+        console.log(error);
       });
   };
 
