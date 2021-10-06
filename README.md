@@ -1,4 +1,4 @@
-# Getting Started with Create React App
+# Schooly
 
 Schooly is an under-production web application, aimed to make the process of Online Learning easier for teachers and students. It helps teachers manage and communicate with their classroom and students, and also helps students submit their homework and stay connected with learning at school. It currently involves creation of "classrooms", where teachers can post assignments in PDF and .docx (future), and notices or announcements for the entire classroom to see.
 
